@@ -1,0 +1,62 @@
+buildscript {
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-noarg:$kt_version"
+    classpath "org.jetbrains.kotlin:kotlin-allopen:$kt_version"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kt_version"
+  }
+  repositories {
+    mavenLocal()
+    maven {
+      url "http://maven.aliyun.com/nexus/content/groups/public/"
+    }
+    maven {
+      url "http://maven.aliyun.com/nexus/content/repositories/jcenter"
+    }
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+    gradlePluginPortal()
+  }
+}
+
+apply plugin: 'java'
+//apply plugin: 'application'
+apply plugin: 'maven-publish'
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'kotlin-noarg'
+
+
+group 'com.ken'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+  mavenLocal()
+  maven {
+    url "http://maven.aliyun.com/nexus/content/groups/public/"
+  }
+  maven {
+    url "http://maven.aliyun.com/nexus/content/repositories/jcenter"
+  }
+  mavenCentral()
+  jcenter()
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kt_version"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:$kt_version"
+
+  implementation "org.slf4j:jul-to-slf4j:$slf4j_version"
+
+  testCompile group: 'junit', name: 'junit', version: '4.12'
+//  testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
+}
+
+compileKotlin {
+  kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+  kotlinOptions.jvmTarget = "1.8"
+}
