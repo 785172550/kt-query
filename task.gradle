@@ -1,0 +1,7 @@
+// java -cp .\h2-1.4.199.jar org.h2.tools.Server -tcp -tcpAllowOthers -web -webAllowOthers -browser -ifNotExists
+task h2DBStart(type: JavaExec, group: 'test') {
+  description = 'start h2 data base'
+  classpath = sourceSets.test.runtimeClasspath
+  main = 'org.h2.tools.Server'
+  args '-tcp', '-tcpAllowOthers', '-web', '-webAllowOthers', '-ifNotExists'
+}

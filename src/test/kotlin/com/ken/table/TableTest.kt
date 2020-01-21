@@ -3,8 +3,10 @@ package com.ken.table
 import com.ken.builder.SqlSelectBuilder
 import com.ken.builder.query
 import com.ken.data.BaseTable
+import me.liuwj.ktorm.database.Database
 import org.junit.Assert
 import org.junit.Test
+import java.sql.ResultSet
 
 /**
  * @Author hw83770
@@ -12,17 +14,20 @@ import org.junit.Test
  *
  */
 
-object Coutry : BaseTable("coutry") {
-  val id = long("id")
+object DEPARTMENT : BaseTable("t_department") {
+  val id = int("id")
   val name = varchar("name")
-  val nickName = varchar("nick_name")
-  val createTime = date("create_time")
+  val location = varchar("location")
 }
 
-object Province : BaseTable("province") {
-  val id = long("id")
+object EMPLOYEE : BaseTable("t_employee") {
+  val id = int("id")
   val name = varchar("name")
-  val country = varchar("country_name")
+  val job = varchar("job")
+  val managerId = int("manager_id")
+  val hireDate = date("hire_date")
+  val salary = long("salary")
+  val departmentId = int("department_id")
 }
 
 class TableTest {
@@ -32,24 +37,43 @@ class TableTest {
 
   @Test
   fun `test table schema define`() {
-    val sqlBuilder: SqlSelectBuilder.() -> Unit = {
-      select(Province.id, Province.name)
-      from(table = Province.tblName)
+    val con = Database.connect(
+      url = "jdbc:h2:tcp://localhost/~/Documents/db/kt_rest",
+      driver = "org.h2.Driver",
+      user = "sa",
+      password = ""
+    )
+
+    val builder = EMPLOYEE.query {
+      select(EMPLOYEE.id, EMPLOYEE.name)
       where {
-        exists{
-          select(Province.name)
-          from(Province.tblName)
+        exists(DEPARTMENT.query {
           where {
-            Province.country eq Coutry.name
-            Coutry.name eq "China"
+            DEPARTMENT.id eq EMPLOYEE.departmentId
+            DEPARTMENT.name eq "ocean"
           }
-        }
+        })
       }
     }
-    println(query(sqlBuilder).build())
-    doTest("select province.id, province.name from province where exist " +
-      "(select province.name from province where province.country_name = coutry.name and coutry.name = 'China')", sqlBuilder)
+    println(builder.build())
 
-    println(Province)
+    con.useConnection {
+      val stat = it.createStatement()
+      stat.execute(builder.build())
+      for (row in stat.resultSet) {
+        println(row.getString("name"))
+      }
+    }
+  }
+}
+
+operator fun ResultSet.iterator() = object : Iterator<ResultSet> {
+  private val rs = this@iterator
+  private var hasNext: Boolean = false
+
+  override fun next(): ResultSet = if (hasNext) rs else throw NoSuchElementException()
+  override fun hasNext(): Boolean = run {
+    hasNext = rs.next()
+    hasNext
   }
 }

@@ -10,6 +10,11 @@ import com.ken.data.Col
  * @Date 21:31 2020/1/19
  *
  */
+
+@DslMarker
+annotation class QueryDsl
+
+@QueryDsl
 class SqlSelectBuilder {
 
   // col

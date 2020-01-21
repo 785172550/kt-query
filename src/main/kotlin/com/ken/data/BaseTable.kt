@@ -1,7 +1,8 @@
 package com.ken.data
 
+import com.ken.builder.SqlSelectBuilder
 import java.time.LocalDate
-import java.util.LinkedHashMap
+import java.util.*
 
 /**
  * @Author hw83770
@@ -34,5 +35,11 @@ open class BaseTable(val tblName: String) : Table {
 
   override fun toString(): String {
     return _columns.toString()
+  }
+
+  fun query(init: SqlSelectBuilder.() -> Unit): SqlSelectBuilder = run {
+    val builder = SqlSelectBuilder()
+    builder.table = this.tblName
+    builder.apply(init)
   }
 }

@@ -71,6 +71,7 @@ class QueryBuilderTest {
   fun `test sub query in where clause`() {
     val sqlBuilder: SqlSelectBuilder.() -> Unit = {
       from(table = "table1")
+      where {  }
       where {
         or {
           col<String>(name = "col2").isNotNull()

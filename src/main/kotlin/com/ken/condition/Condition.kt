@@ -1,5 +1,6 @@
 package com.ken.condition
 
+import com.ken.builder.QueryDsl
 import com.ken.builder.SqlSelectBuilder
 import com.ken.builder.query
 import com.ken.data.Col
@@ -10,6 +11,7 @@ import com.ken.data.Col
  *
  */
 
+//@QueryDsl
 abstract class Condition {
   //  inline fun <reified T> col(name: String): Col<T> = Col(name)
   fun <T> Col<T>.isNull() {
@@ -80,13 +82,13 @@ abstract class Condition {
     addCondition(ExistsCondition(Col<Any>(""), query(init), cmp = "notExists"))
   }
 
-//  fun exists(select: SqlSelectBuilder) {
-//    addCondition(ExistsCondition(Col<Any>(""), select, cmp = "exists"))
-//  }
-//
-//  fun notExists(select: SqlSelectBuilder) {
-//    addCondition(ExistsCondition(Col<Any>(""), select, cmp = "notExists"))
-//  }
+  fun exists(select: SqlSelectBuilder) {
+    addCondition(ExistsCondition(Col<Any>(""), select, cmp = "exists"))
+  }
+
+  fun notExists(select: SqlSelectBuilder) {
+    addCondition(ExistsCondition(Col<Any>(""), select, cmp = "notExists"))
+  }
 
   fun and(init: Condition.() -> Unit) {
     addCondition(And().apply(init))
