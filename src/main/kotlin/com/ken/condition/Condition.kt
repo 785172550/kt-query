@@ -1,6 +1,7 @@
 package com.ken.condition
 
 import com.ken.builder.SqlSelectBuilder
+import com.ken.builder.query
 import com.ken.data.Col
 
 /**
@@ -64,20 +65,28 @@ abstract class Condition {
   }
 
   infix fun <T> Col<T>.`in`(select: SqlSelectBuilder) {
-    addCondition(ExistCondition(this, select, cmp = "in"))
+    addCondition(ExistsCondition(this, select, cmp = "in"))
   }
 
   infix fun <T> Col<T>.notIn(select: SqlSelectBuilder) {
-    addCondition(ExistCondition(this, select, cmp = "notIn"))
+    addCondition(ExistsCondition(this, select, cmp = "notIn"))
   }
 
-  fun exist(select: SqlSelectBuilder) {
-    addCondition(ExistCondition(Col<Any>(""), select, cmp = "exist"))
+  fun exists(init: SqlSelectBuilder.() -> Unit) {
+    addCondition(ExistsCondition(Col<Any>(""), query(init), cmp = "exists"))
   }
 
-  fun notExist(select: SqlSelectBuilder) {
-    addCondition(ExistCondition(Col<Any>(""), select, cmp = "notExist"))
+  fun notExists(init: SqlSelectBuilder.() -> Unit) {
+    addCondition(ExistsCondition(Col<Any>(""), query(init), cmp = "notExists"))
   }
+
+//  fun exists(select: SqlSelectBuilder) {
+//    addCondition(ExistsCondition(Col<Any>(""), select, cmp = "exists"))
+//  }
+//
+//  fun notExists(select: SqlSelectBuilder) {
+//    addCondition(ExistsCondition(Col<Any>(""), select, cmp = "notExists"))
+//  }
 
   fun and(init: Condition.() -> Unit) {
     addCondition(And().apply(init))
@@ -202,7 +211,7 @@ class CollectionCondition<T>(private val column: Col<T>, private val values: Col
   }
 }
 
-class ExistCondition<T>(private val column: Col<T>, private val select: SqlSelectBuilder, private val cmp: String) :
+class ExistsCondition<T>(private val column: Col<T>, private val select: SqlSelectBuilder, private val cmp: String) :
   Condition() {
 
   override fun addCondition(condition: Condition) {
@@ -214,11 +223,11 @@ class ExistCondition<T>(private val column: Col<T>, private val select: SqlSelec
     val queryResult = select.build()
 
     return when (cmp) {
-      "exist" -> "exist ($queryResult)"
-      "not exist" -> "not exist ($queryResult)"
+      "exists" -> "exists ($queryResult)"
+      "not exists" -> "not exists ($queryResult)"
       "in" -> "${actualCol} in ($queryResult)"
       "not in" -> "${actualCol} not in ($queryResult)"
-      else -> "${actualCol} not exist ($queryResult)"
+      else -> "${actualCol} not exists ($queryResult)"
     }
   }
 }

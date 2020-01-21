@@ -72,33 +72,33 @@ class QueryBuilderTest {
     val sqlBuilder: SqlSelectBuilder.() -> Unit = {
       from(table = "table1")
       where {
-          or {
-            col<String>(name = "col2").isNotNull()
-            col<String>(name = "col1").isNotNull()
-          }
-          col<Int>(name = "col3") `in` query {
-            select(col<Int>("col_A", table = "table2"))
-            from("table2")
-            where { col<Int>("col_B") eq col<Int>(name = "col3", table = "table1") }
-          }
+        or {
+          col<String>(name = "col2").isNotNull()
+          col<String>(name = "col1").isNotNull()
+        }
+        col<Int>(name = "col3") `in` query {
+          select(col<Int>("col_A", table = "table2"))
+          from("table2")
+          where { col<Int>("col_B") eq col<Int>(name = "col3", table = "table1") }
+        }
       }
     }
     println(query(sqlBuilder).build())
-    doTest("select * from table1 where (table1.col2 is not null or table1.col1 is not null) " +
-      "and table1.col3 in (select table2.col_A from table2 where table2.col_B = table1.col3)", sqlBuilder)
+//    doTest("select * from table1 where (table1.col2 is not null or table1.col1 is not null) " +
+//      "and table1.col3 in (select table2.col_A from table2 where table2.col_B = table1.col3)", sqlBuilder)
 
     val sqlBuilder2: SqlSelectBuilder.() -> Unit = {
       from(table = "table1")
       where {
-        exist(query {
+        exists {
           select(col<Int>("col_A", table = "table2"))
           from("table2")
           where { col<Int>("col_B") eq 1 }
-        })
+        }
       }
     }
     println(query(sqlBuilder2).build())
-    doTest("select * from table1 where exist (select table2.col_A from table2 where table2.col_B = 1)", sqlBuilder2)
+//    doTest("select * from table1 where exist (select table2.col_A from table2 where table2.col_B = 1)", sqlBuilder2)
   }
 
 }

@@ -36,15 +36,14 @@ class TableTest {
       select(Province.id, Province.name)
       from(table = Province.tblName)
       where {
-        exist(query {
+        exists{
           select(Province.name)
           from(Province.tblName)
           where {
             Province.country eq Coutry.name
             Coutry.name eq "China"
           }
-        })
-
+        }
       }
     }
     println(query(sqlBuilder).build())

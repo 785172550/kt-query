@@ -13,7 +13,7 @@ import com.ken.data.Col
 class SqlSelectBuilder {
 
   // col
-  inline fun <reified T> col(name: String): Col<T> = Col(name, table)
+  inline fun <reified T> col(name: String): Col<T> = Col(name)
 
   inline fun <reified T> col(name: String, table: String): Col<T> = Col(name, table)
 
